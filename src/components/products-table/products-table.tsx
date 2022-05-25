@@ -1,21 +1,13 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography, Paper } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios'
 import { Button, Grid } from '@mui/material'
+import NewGridData from './newGridData'
+import styled from 'styled-components';
+
 
 interface Data {
   product: string,
@@ -33,42 +25,6 @@ interface Data {
   potassium: number,
   calcium: number,
   vitamine: number,
-}
-
-function createData(
-  product: string,
-  tags: String,
-  energy: number,
-  protein: number,
-  fat: number,
-  monounsaturatedFat: number,
-  polyunsaturatedFat: number,
-  carbohydrate: number,
-  sugar: number,
-  transFat: number,
-  dietaryfibre: number,
-  sodium: number,
-  potassium: number,
-  calcium: number,
-  vitamine: number,
-): Data {
-  return {
-    product,
-    tags,
-    energy,
-    protein,
-    fat,
-    monounsaturatedFat,
-    polyunsaturatedFat,
-    carbohydrate,
-    sugar,
-    transFat,
-    dietaryfibre,
-    sodium,
-    potassium,
-    calcium,
-    vitamine
-  };
 }
 
 
@@ -135,42 +91,42 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'fat',
   },
-  
+
   {
     id: 'monounsaturatedFat',
     numeric: true,
     disablePadding: false,
     label: 'monounsaturatedFat',
   },
-  
+
   {
     id: 'polyunsaturatedFat',
     numeric: true,
     disablePadding: false,
     label: 'polyunsaturatedFat',
   },
-  
+
   {
     id: 'carbohydrate',
     numeric: true,
     disablePadding: false,
     label: 'carbohydrate',
   },
-  
+
   {
     id: 'sugar',
     numeric: true,
     disablePadding: false,
     label: 'Sugar',
   },
-  
+
   {
     id: 'transFat',
     numeric: true,
     disablePadding: false,
     label: 'transFat',
   },
-  
+
   {
     id: 'dietaryfibre',
     numeric: true,
@@ -236,7 +192,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              >
+            >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
@@ -264,11 +220,9 @@ const ProductsTable: React.FC = () => {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [products, setproducts] = React.useState([]);
-  const [Selectedproductsdata, setSelectedproductsdata] = React.useState([])
+  const [SelectedProductData, setSelectedProductData] = React.useState([])
   const [rows, setrows] = React.useState([])
-  const [upperrow, setupperrow] = React.useState(<></>)
-  const [buttondata, setbuttondata] = React.useState("SELECT 2 PRODUCT TO COMPARE")
-  const [disable, setdisable] = React.useState(true)
+  const [upperRow, setupperRow] = React.useState(<></>)
   function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
     const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
     stabilizedThis.sort((a, b) => {
@@ -316,23 +270,23 @@ const ProductsTable: React.FC = () => {
             Nutrition
           </Typography>
         )}
-        <Button disabled={disable} variant="contained" style={{ width: "400px", backgroundColor: "grey",color:"whitey" }} id="mybtn" onClick={comparedata}>{buttondata}</Button>
+        <Button disabled={selected.length !== 2 ? true : false} variant="contained" style={{ width: "400px", backgroundColor: "grey", color: "whitey" }} id="mybtn" onClick={comparedata}>{selected.length !== 2 ? "SELECT 2 PRODUCT TO COMPARE" : "COMPARE PRODUCTS"}</Button>
 
       </Toolbar>
     );
   };
   useEffect(() => {
-    var productdata = []
-    var productnamedata = []
+    var productData = []
+    var productNameData = []
     axios.get("http://localhost:3000/api/products").then(res => {
       setproducts(res.data)
       res.data.map(data => {
-        var item = createData(data.name, data.tags, data.nutrition.energy, data.nutrition.protein, data.nutrition.fat, data.nutrition.monounsaturatedFat, data.nutrition.polyunsaturatedFat, data.nutrition.carbohydrate, data.nutrition.sugar, data.nutrition.transFat, data.nutrition.dietaryFibre, data.nutrition.sodium, data.nutrition.potassium, data.nutrition.calcium, data.nutrition["vitamin-e"])
-        productnamedata.push(data.id)
-        productdata.push({...data.name, ...data.tags, ...data.nutrition.energy, ...data.nutrition.protein, ...data.nutrition.fat, ...data.nutrition.monounsaturatedFat, ...data.nutrition.polyunsaturatedFat, ...data.nutrition.carbohydrate, ...data.nutrition.sugar, ...data.nutrition.transFat, ...data.nutrition.dietaryFibre, ...data.nutrition.sodium, ...data.nutrition.potassium, ...data.nutrition.calcium, ...data.nutrition["vitamin-e"]})
+        productNameData.push(data.id)
+        productData.push({product:data.name,tags: data.tags,energy: data.nutrition.energy,protein: data.nutrition.protein,fat: data.nutrition.fat,monounsaturatedFat: data.nutrition.monounsaturatedFat,polyunsaturatedFat: data.nutrition.polyunsaturatedFat,carbohydrate: data.nutrition.carbohydrate, sugar:data.nutrition.sugar, transFat:data.nutrition.transFat,dietaryFibre: data.nutrition.dietaryFibre,sodium: data.nutrition.sodium,potassium: data.nutrition.potassium,calcium: data.nutrition.calcium,"vitamin-e": data.nutrition["vitamin-e"]})
       })
-      setrows(productdata)
-      })
+      console.log(productData)
+      setrows(productData)
+    })
   }, [])
 
   const handleRequestSort = (
@@ -353,95 +307,34 @@ const ProductsTable: React.FC = () => {
     setSelected([]);
   };
 
-  const backgroundcolordata = (data1:number, data2:number) => {
-    if (data1 > data2) {
-      return "blue"
-    }
-    if (data1 < data2) {
-      return "red"
-    }
-    if (data2 == undefined) {
-      return "grey"
-    }
-    else return "yellow"
-  }
-
-  const rowcolor=(data1:string)=>{
-    if(selected.indexOf(data1)==-1){
-      return("rgb(77, 77, 77)")
-    }
-    else{
-      return("#955073")
-    }
-  }
   const showupperrow = () => {
-    setupperrow(<>
-      <TableCell align="right">
-        <Grid item xs={1.5}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px" }}>{Selectedproductsdata[0].name}</h4><h4>{Selectedproductsdata[1].name}</h4></> : <></>}
-        </Grid>
-      </TableCell>
-      <TableCell align="right">
-        <Grid item xs={1.5}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px" }}>{Selectedproductsdata[0].tags}</h4><h4>{Selectedproductsdata[1].tags}</h4></> : <></>}
-        </Grid>
-      </TableCell>
-      <TableCell align="right">
-        <Grid item xs={.7}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.energy, Selectedproductsdata[1].nutrition.energy), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.energy}</h4 ><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.energy, Selectedproductsdata[0].nutrition.energy), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.energy}</h4></> : <></>}
-        </Grid>
-      </TableCell>
-      <TableCell align="right">
-        <Grid item xs={.7}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.protein, Selectedproductsdata[1].nutrition.protein), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.protein}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.protein, Selectedproductsdata[0].nutrition.protein), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.protein}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={.8}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.fat, Selectedproductsdata[1].nutrition.fat), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.fat}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.fat, Selectedproductsdata[0].nutrition.fat), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.fat}</h4></> : <></>}
-        </Grid></TableCell>
-        <TableCell align="right">
-        <Grid item xs={.8}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.monounsaturatedFat, Selectedproductsdata[1].nutrition.monounsaturatedFat), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.monounsaturatedFat}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.monounsaturatedFat, Selectedproductsdata[0].nutrition.monounsaturatedFat), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.monounsaturatedFat}</h4></> : <></>}
-        </Grid></TableCell>
-        <TableCell align="right">
-        <Grid item xs={.8}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.polyunsaturatedFat, Selectedproductsdata[1].nutrition.polyunsaturatedFat), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.polyunsaturatedFat}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.polyunsaturatedFat, Selectedproductsdata[0].nutrition.polyunsaturatedFat), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.polyunsaturatedFat}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={.8}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.carbohydrate, Selectedproductsdata[1].nutrition.carbohydrate), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.carbohydrate}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.carbohydrate, Selectedproductsdata[0].nutrition.carbohydrate), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.carbohydrate}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={1}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.sugar, Selectedproductsdata[1].nutrition.sugar), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.sugar}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.sugar, Selectedproductsdata[0].nutrition.sugar), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.sugat}</h4></> : <></>}
-        </Grid></TableCell>
-        <TableCell align="right">
-        <Grid item xs={.8}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.transFat, Selectedproductsdata[1].nutrition.transFat), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.transFat}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.transFat, Selectedproductsdata[0].nutrition.transFat), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.transFat}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={1}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.dietaryFibre, Selectedproductsdata[1].nutrition.dietaryFibre), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.dietaryFibre}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.dietaryFibre, Selectedproductsdata[0].nutrition.dietaryFibre), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.dietaryFibre}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={1}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.sodium, Selectedproductsdata[1].nutrition.sodium), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.sodium}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.sodium, Selectedproductsdata[0].nutrition.sodium), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.sodium}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={1}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.potassium, Selectedproductsdata[1].nutrition.potassium), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.potassium}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.potassium, Selectedproductsdata[0].nutrition.potassium), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.potassium}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={1}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition.calcium, Selectedproductsdata[1].nutrition.calcium), textAlign: "center" }}>{Selectedproductsdata[0].nutrition.calcium}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition.calcium, Selectedproductsdata[0].nutrition.calcium), textAlign: "center" }}>{Selectedproductsdata[1].nutrition.calcium}</h4></> : <></>}
-        </Grid></TableCell>
-      <TableCell align="right">
-        <Grid item xs={.5}>
-          {Selectedproductsdata[0] != undefined ? <><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[0].nutrition["vitamin-e"], Selectedproductsdata[1].nutrition["vitamin-e"]), textAlign: "center" }}>{Selectedproductsdata[0].nutrition["vitamin-e"]}</h4><h4 style={{ marginTop: "-11px",borderRadius:"20px", backgroundColor: backgroundcolordata(Selectedproductsdata[1].nutrition["vitamin-e"], Selectedproductsdata[0].nutrition["vitamin-e"]), textAlign: "center" }}>{Selectedproductsdata[1].nutrition["vitamin-e"]}</h4></> : <></>}
-        </Grid>
-      </TableCell></>
+    const itemData = [
+      { item1: SelectedProductData[0].name, item2: SelectedProductData[1].name },
+      { item1: SelectedProductData[0].tags, item2: SelectedProductData[1].tags },
+      { item1: SelectedProductData[0].nutrition.energy, item2: SelectedProductData[1].nutrition.energy },
+      { item1: SelectedProductData[0].nutrition.protein, item2: SelectedProductData[1].nutrition.protein },
+      { item1: SelectedProductData[0].nutrition.fat, item2: SelectedProductData[1].nutrition.fat },
+      { item1: SelectedProductData[0].nutrition.monounsaturatedFat, item2: SelectedProductData[1].nutrition.monounsaturatedFat },
+      { item1: SelectedProductData[0].nutrition.polyunsaturatedFat, item2: SelectedProductData[1].nutrition.polyunsaturatedFat },
+      { item1: SelectedProductData[0].nutrition.carbohydrate, item2: SelectedProductData[1].nutrition.carbohydrate },
+      { item1: SelectedProductData[0].nutrition.sugar, item2: SelectedProductData[1].nutrition.sugar },
+      { item1: SelectedProductData[0].nutrition.transFat, item2: SelectedProductData[1].nutrition.transFat },
+      { item1: SelectedProductData[0].nutrition.dietaryFibre, item2: SelectedProductData[1].nutrition.dietaryFibre },
+      { item1: SelectedProductData[0].nutrition.sodium, item2: SelectedProductData[1].nutrition.sodium },
+      { item1: SelectedProductData[0].nutrition.potassium, item2: SelectedProductData[1].nutrition.potassium },
+      { item1: SelectedProductData[0].nutrition.calcium, item2: SelectedProductData[1].nutrition.calcium },
+      { item1: SelectedProductData[0].nutrition["vitamin-e"], item2: SelectedProductData[1].nutrition["vitamin-e"] }
+
+    ]
+    setupperRow(<>
+      {itemData.map(item => {
+        return (
+          <NewGridData item1={item} />
+        )
+      })}
+    </>
     )
-    setdisable(true)
+
   }
   const handleClick = (event: React.MouseEvent<unknown>, name: string, id: string) => {
     const selectedIndex = selected.indexOf(name);
@@ -450,7 +343,6 @@ const ProductsTable: React.FC = () => {
       if (selectedIndex === -1) {
         newSelected = newSelected.concat(selected, name);
         setSelected(newSelected);
-        document.getElementById(id).style.backgroundColor = "#955073"
 
       }
       if (newSelected.length == 2) {
@@ -458,10 +350,9 @@ const ProductsTable: React.FC = () => {
         datadata = (products.filter(function (data) {
           return newSelected.indexOf(data.name) !== -1
         }))
-        setSelectedproductsdata(datadata)
+        setSelectedProductData(datadata)
         var data = [...newSelected]
-        setdisable(false)
-        setbuttondata("COMPARE PRODUCTS")
+
       }
     }
 
@@ -469,27 +360,21 @@ const ProductsTable: React.FC = () => {
       if (selectedIndex === 0) {
         newSelected = newSelected.concat(selected.slice(1));
         setSelected(newSelected);
-        document.getElementById(id).style.backgroundColor = "rgb(77, 77, 77)"
-        setupperrow(<></>)
-        setdisable(true)
-        setbuttondata("SELECT 2 PRODUCT TO COMPARE")
+        setupperRow(<></>)
+
       } else if (selectedIndex === selected.length - 1) {
         newSelected = newSelected.concat(selected.slice(0, -1));
         setSelected(newSelected);
-        document.getElementById(id).style.backgroundColor = "rgb(77, 77, 77)"
-        setupperrow(<></>)
-        setdisable(true)
-        setbuttondata("SELECT 2 PRODUCT TO COMPARE")
+        setupperRow(<></>)
+
       } else if (selectedIndex > 0) {
         newSelected = newSelected.concat(
           selected.slice(0, selectedIndex),
           selected.slice(selectedIndex + 1)
         );
-        setupperrow(<></>)
+        setupperRow(<></>)
         setSelected(newSelected);
-        document.getElementById(id).style.backgroundColor = "rgb(77, 77, 77)"
-        setdisable(true)
-        setbuttondata("SELECT 2 PRODUCT TO COMPARE")
+
       }
 
     }
@@ -504,12 +389,11 @@ const ProductsTable: React.FC = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  
+
 
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -537,7 +421,7 @@ const ProductsTable: React.FC = () => {
             <TableBody
             >
               <TableRow>
-                {upperrow}
+                {upperRow}
               </TableRow>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -545,6 +429,9 @@ const ProductsTable: React.FC = () => {
                   const isItemSelected = isSelected("row.name");
                   const labelId = `enhanced-table-checkbox-${index}`;
 
+                  const Wrapper = styled.section`
+                    color:white;
+                    `;
                   return (
                     <TableRow
                       hover
@@ -555,32 +442,25 @@ const ProductsTable: React.FC = () => {
                       key={row.name}
                       selected={isItemSelected}
                       id={`enhanced-table-checkbox-${index}`}
-                      style={{backgroundColor:rowcolor(row.product)}}
+                      style={{ backgroundColor: selected.includes(row.product) ? "#955073" : "rgb(77,77,77)" }}
                     >
                       <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                        style={{ color: "white" }}
-
-                      >
-                        {row.product}
+                        component="th" id={labelId} scope="row" padding="none"><Wrapper>{row.product}</Wrapper>
                       </TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.tags}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.energy}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.protein}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.fat}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.monounsaturatedFat}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.polyunsaturatedFat}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.carbohydrate}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.sugar}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.transFat}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.dietaryfibre}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.sodium}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.potassium}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.calcium}</TableCell>
-                      <TableCell align="right" style={{ color: "white" }}>{row.vitamine}</TableCell>
+                      <TableCell align="right" ><Wrapper>{row.tags}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.energy}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.protein}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.fat}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.monounsaturatedFat}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.polyunsaturatedFat}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.carbohydrate}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.sugar}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.transFat}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.dietaryfibre}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.sodium}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.potassium}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.calcium}</Wrapper></TableCell>
+                      <TableCell align="right" ><Wrapper>{row.vitamine}</Wrapper></TableCell>
                     </TableRow>
                   );
                 })}
@@ -604,10 +484,10 @@ const ProductsTable: React.FC = () => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          style={{color:"white"}}
+          style={{ color: "white" }}
         />
       </Paper>
-     
+
     </Box>
   );
 }
