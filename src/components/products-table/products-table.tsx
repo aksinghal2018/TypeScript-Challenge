@@ -4,8 +4,8 @@ import { alpha } from '@mui/material/styles';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography, Paper } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios'
-import { Button, Grid } from '@mui/material'
-import NewGridData from './newGridData'
+import { Button } from '@mui/material'
+import NewRow from './newRow'
 import styled from 'styled-components';
 
 
@@ -215,12 +215,10 @@ interface EnhancedTableToolbarProps {
 const ProductsTable: React.FC = () => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('product');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [selectedProducts, setSelectedProducts] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [products, setproducts] = React.useState([]);
-  const [SelectedProductData, setSelectedProductData] = React.useState([])
+  const [productsList, setproductsList] = React.useState([]);
   const [rows, setrows] = React.useState([])
   const [upperRow, setupperRow] = React.useState(<></>)
   function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
@@ -270,21 +268,18 @@ const ProductsTable: React.FC = () => {
             Nutrition
           </Typography>
         )}
-        <Button disabled={selected.length !== 2 ? true : false} variant="contained" style={{ width: "400px", backgroundColor: "grey", color: "whitey" }} id="mybtn" onClick={comparedata}>{selected.length !== 2 ? "SELECT 2 PRODUCT TO COMPARE" : "COMPARE PRODUCTS"}</Button>
+        <Button disabled={selectedProducts.length !== 2 ? true : false} variant="contained" style={{ width: "400px", backgroundColor: "grey", color: "whitey" }} id="mybtn" onClick={comparedata}>{selectedProducts.length !== 2 ? "SELECT 2 PRODUCT TO COMPARE" : "COMPARE PRODUCTS"}</Button>
 
       </Toolbar>
     );
   };
   useEffect(() => {
     var productData = []
-    var productNameData = []
     axios.get("http://localhost:3000/api/products").then(res => {
-      setproducts(res.data)
+      setproductsList(res.data)
       res.data.map(data => {
-        productNameData.push(data.id)
-        productData.push({product:data.name,tags: data.tags,energy: data.nutrition.energy,protein: data.nutrition.protein,fat: data.nutrition.fat,monounsaturatedFat: data.nutrition.monounsaturatedFat,polyunsaturatedFat: data.nutrition.polyunsaturatedFat,carbohydrate: data.nutrition.carbohydrate, sugar:data.nutrition.sugar, transFat:data.nutrition.transFat,dietaryFibre: data.nutrition.dietaryFibre,sodium: data.nutrition.sodium,potassium: data.nutrition.potassium,calcium: data.nutrition.calcium,"vitamin-e": data.nutrition["vitamin-e"]})
+        productData.push({productid:data.id,product:data.name,tags: data.tags,energy: data.nutrition.energy,protein: data.nutrition.protein,fat: data.nutrition.fat,monounsaturatedFat: data.nutrition.monounsaturatedFat,polyunsaturatedFat: data.nutrition.polyunsaturatedFat,carbohydrate: data.nutrition.carbohydrate, sugar:data.nutrition.sugar, transFat:data.nutrition.transFat,dietaryFibre: data.nutrition.dietaryFibre,sodium: data.nutrition.sodium,potassium: data.nutrition.potassium,calcium: data.nutrition.calcium,"vitamin-e": data.nutrition["vitamin-e"]})
       })
-      console.log(productData)
       setrows(productData)
     })
   }, [])
@@ -301,83 +296,78 @@ const ProductsTable: React.FC = () => {
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.name);
-      setSelected(newSelecteds);
+      setSelectedProducts(newSelecteds);
       return;
     }
-    setSelected([]);
+    setSelectedProducts([]);
   };
-
+  
   const showupperrow = () => {
+    
+    const firstSelectedProductData=productsList.find(item=>item.id==selectedProducts[0])
+    const secondSelectedProductData=productsList.find(item=>item.id==selectedProducts[1])
+      
     const itemData = [
-      { item1: SelectedProductData[0].name, item2: SelectedProductData[1].name },
-      { item1: SelectedProductData[0].tags, item2: SelectedProductData[1].tags },
-      { item1: SelectedProductData[0].nutrition.energy, item2: SelectedProductData[1].nutrition.energy },
-      { item1: SelectedProductData[0].nutrition.protein, item2: SelectedProductData[1].nutrition.protein },
-      { item1: SelectedProductData[0].nutrition.fat, item2: SelectedProductData[1].nutrition.fat },
-      { item1: SelectedProductData[0].nutrition.monounsaturatedFat, item2: SelectedProductData[1].nutrition.monounsaturatedFat },
-      { item1: SelectedProductData[0].nutrition.polyunsaturatedFat, item2: SelectedProductData[1].nutrition.polyunsaturatedFat },
-      { item1: SelectedProductData[0].nutrition.carbohydrate, item2: SelectedProductData[1].nutrition.carbohydrate },
-      { item1: SelectedProductData[0].nutrition.sugar, item2: SelectedProductData[1].nutrition.sugar },
-      { item1: SelectedProductData[0].nutrition.transFat, item2: SelectedProductData[1].nutrition.transFat },
-      { item1: SelectedProductData[0].nutrition.dietaryFibre, item2: SelectedProductData[1].nutrition.dietaryFibre },
-      { item1: SelectedProductData[0].nutrition.sodium, item2: SelectedProductData[1].nutrition.sodium },
-      { item1: SelectedProductData[0].nutrition.potassium, item2: SelectedProductData[1].nutrition.potassium },
-      { item1: SelectedProductData[0].nutrition.calcium, item2: SelectedProductData[1].nutrition.calcium },
-      { item1: SelectedProductData[0].nutrition["vitamin-e"], item2: SelectedProductData[1].nutrition["vitamin-e"] }
+      { item1: firstSelectedProductData.name, item2: secondSelectedProductData.name },
+      { item1: firstSelectedProductData.tags, item2: secondSelectedProductData.tags },
+      { item1: firstSelectedProductData.nutrition.energy, item2: secondSelectedProductData.nutrition.energy },
+      { item1: firstSelectedProductData.nutrition.protein, item2: secondSelectedProductData.nutrition.protein },
+      { item1: firstSelectedProductData.nutrition.fat, item2: secondSelectedProductData.nutrition.fat },
+      { item1: firstSelectedProductData.nutrition.monounsaturatedFat, item2: secondSelectedProductData.nutrition.monounsaturatedFat },
+      { item1: firstSelectedProductData.nutrition.polyunsaturatedFat, item2: secondSelectedProductData.nutrition.polyunsaturatedFat },
+      { item1: firstSelectedProductData.nutrition.carbohydrate, item2: secondSelectedProductData.nutrition.carbohydrate },
+      { item1: firstSelectedProductData.nutrition.sugar, item2: secondSelectedProductData.nutrition.sugar },
+      { item1: firstSelectedProductData.nutrition.transFat, item2: secondSelectedProductData.nutrition.transFat },
+      { item1: firstSelectedProductData.nutrition.dietaryFibre, item2: secondSelectedProductData.nutrition.dietaryFibre },
+      { item1: firstSelectedProductData.nutrition.sodium, item2: secondSelectedProductData.nutrition.sodium },
+      { item1: firstSelectedProductData.nutrition.potassium, item2: secondSelectedProductData.nutrition.potassium },
+      { item1: firstSelectedProductData.nutrition.calcium, item2: secondSelectedProductData.nutrition.calcium },
+      { item1: firstSelectedProductData.nutrition["vitamin-e"], item2: secondSelectedProductData.nutrition["vitamin-e"] }
 
     ]
     setupperRow(<>
       {itemData.map(item => {
         return (
-          <NewGridData item1={item} />
+          <NewRow item1={item} />
         )
       })}
     </>
     )
 
   }
-  const handleClick = (event: React.MouseEvent<unknown>, name: string, id: string) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event: React.MouseEvent<unknown>, productid: string, id: string) => {
+    const selectedIndex = selectedProducts.indexOf(productid);
     let newSelected: readonly string[] = [];
-    if (selected.length < 2) {
+    if (selectedProducts.length < 2) {
       if (selectedIndex === -1) {
-        newSelected = newSelected.concat(selected, name);
-        setSelected(newSelected);
-
-      }
-      if (newSelected.length == 2) {
-        var datadata = []
-        datadata = (products.filter(function (data) {
-          return newSelected.indexOf(data.name) !== -1
-        }))
-        setSelectedProductData(datadata)
-        var data = [...newSelected]
-
+        newSelected = newSelected.concat(selectedProducts, productid);
+        setSelectedProducts(newSelected);
       }
     }
 
     if (selectedIndex !== -1) {
       if (selectedIndex === 0) {
-        newSelected = newSelected.concat(selected.slice(1));
-        setSelected(newSelected);
+        newSelected = newSelected.concat(selectedProducts.slice(1));
+        setSelectedProducts(newSelected);
         setupperRow(<></>)
 
-      } else if (selectedIndex === selected.length - 1) {
-        newSelected = newSelected.concat(selected.slice(0, -1));
-        setSelected(newSelected);
+      } else if (selectedIndex === selectedProducts.length - 1) {
+        newSelected = newSelected.concat(selectedProducts.slice(0, -1));
+        setSelectedProducts(newSelected);
         setupperRow(<></>)
 
       } else if (selectedIndex > 0) {
         newSelected = newSelected.concat(
-          selected.slice(0, selectedIndex),
-          selected.slice(selectedIndex + 1)
+          selectedProducts.slice(0, selectedIndex),
+          selectedProducts.slice(selectedIndex + 1)
         );
         setupperRow(<></>)
-        setSelected(newSelected);
+        setSelectedProducts(newSelected);
 
       }
 
     }
+    
   }
 
 
@@ -392,25 +382,25 @@ const ProductsTable: React.FC = () => {
 
 
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+  const isSelected = (name: string) => selectedProducts.indexOf(name) !== -1;
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+  
   return (
     <Box sx={{ width: '80%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}
         style={{ backgroundColor: "rgb(77, 77, 77)", color: "white" }}
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selectedProducts.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
           >
             <EnhancedTableHead
-              numSelected={selected.length}
+              numSelected={selectedProducts.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
@@ -435,14 +425,14 @@ const ProductsTable: React.FC = () => {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.product, `enhanced-table-checkbox-${index}`)}
+                      onClick={(event) => handleClick(event, row.productid, `enhanced-table-checkbox-${index}`)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
                       selected={isItemSelected}
                       id={`enhanced-table-checkbox-${index}`}
-                      style={{ backgroundColor: selected.includes(row.product) ? "#955073" : "rgb(77,77,77)" }}
+                      style={{ backgroundColor: selectedProducts.includes(row.productid) ? "#955073" : "rgb(77,77,77)" }}
                     >
                       <TableCell
                         component="th" id={labelId} scope="row" padding="none"><Wrapper>{row.product}</Wrapper>
@@ -467,7 +457,7 @@ const ProductsTable: React.FC = () => {
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height:  53 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
