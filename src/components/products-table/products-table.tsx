@@ -8,6 +8,9 @@ import { Button } from '@mui/material'
 import NewRow from './newRow'
 import styled from 'styled-components';
 
+const Wrapper = styled.section`
+  color:white;
+  `;
 
 interface Data {
   product: string,
@@ -170,7 +173,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const {  order, orderBy,onRequestSort } =
     props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -326,9 +329,9 @@ const ProductsTable: React.FC = () => {
 
     ]
     setupperRow(<>
-      {itemData.map(item => {
+      {itemData.map((item,index) => {
         return (
-          <NewRow item1={item} />
+          <NewRow item1={item} key={index} />
         )
       })}
     </>
@@ -419,9 +422,6 @@ const ProductsTable: React.FC = () => {
                   const isItemSelected = isSelected("row.name");
                   const labelId = `enhanced-table-checkbox-${index}`;
 
-                  const Wrapper = styled.section`
-                    color:white;
-                    `;
                   return (
                     <TableRow
                       hover
@@ -429,7 +429,7 @@ const ProductsTable: React.FC = () => {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={index}
                       selected={isItemSelected}
                       id={`enhanced-table-checkbox-${index}`}
                       style={{ backgroundColor: selectedProducts.includes(row.productid) ? "#955073" : "rgb(77,77,77)" }}

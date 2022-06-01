@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ProductsTable } from '@/components'
 import styles from '@/styles/Home.module.css'
@@ -22,7 +22,7 @@ const Home: React.FC = (props) => {
     // TODO consume the products and product properties data coming from `getStaticProps`
   } = props
 
-  const theme = createMuiTheme({ palette: { type: 'dark' } })
+  const theme = createTheme({ palette: { type: 'dark' } })
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
