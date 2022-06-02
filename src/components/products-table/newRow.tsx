@@ -2,7 +2,7 @@ import { TableCell,Grid } from '@mui/material'
 import React from 'react'
 
 
-function NewGridData({item1}) {
+function NewRow({item1}) {
   if(typeof(item1.item1)=="string" || typeof(item1.item1)=="object"){
       return(<TableCell align="right">
       <Grid item xs={1.5}>
@@ -28,4 +28,4 @@ function NewGridData({item1}) {
   )
 }
 
-export default NewGridData
+export default NewRow
